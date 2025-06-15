@@ -1,13 +1,41 @@
-import TableOfContents from '@/components/TableOfContents';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
+"use client";
 
-export default function Page() {
+import CalculatorDrawer from '@/components/CalculatorDrawer';
+import TableOfContents from '@/components/TableOfContents';
+import { Menu as MenuIcon } from '@mui/icons-material';
+import { Box, Card, CardContent, Fab, Paper, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { useEffect, useState } from 'react';
+
+const drawerWidth = 240;
+
+export default function CalculatorPage() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [drawerOpen, setDrawerOpen] = useState(!isMobile);
+
+  useEffect(() => {
+    setDrawerOpen(!isMobile);
+  }, [isMobile]);
+
+  const handleDrawerToggle = () => {
+    setDrawerOpen(!drawerOpen);
+  };
+
   return (
     <Box sx={{ display: 'flex' }}>
-      <Box component="main" sx={{ flex: 3, paddingRight: '2rem' }}>
+      <TableOfContents />
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          marginRight: !isMobile ? `${drawerWidth}px` : '0px',
+          transition: (theme) => theme.transitions.create('margin', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+          }),
+        }}
+      >
         <Typography variant="h1" gutterBottom>
           Calculator
         </Typography>
@@ -16,12 +44,12 @@ export default function Page() {
         </Typography>
 
         <section>
-          <Typography variant="h2" id="section1" gutterBottom>
-            Section 1: Introduction
+          <Typography variant="h2" id="section1" data-toc-title="セクション 1" sx={{ mb: 2, mt: 4 }}>
+            セクション 1
           </Typography>
-          <Typography variant="body1" paragraph>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-            Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula. Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi. Nulla porttitor accumsan tincidunt. Cras ultricies ligula sed magna dictum porta.
+          <Typography paragraph>
+            これはセクション1のコンテンツです。ここにたくさんのテキストやコンポーネントを配置して、ページが長くなるようにします。
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
           </Typography>
           <Typography variant="body1" paragraph>
             Phasellus egestas tellus rutrum tellus pellentesque eu tincidunt tortor aliquam. Porttitor eget dolor morbi non arcu risus quis varius. Augue neque gravida in fermentum et sollicitudin ac orci. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Mauris pharetra et ultrices neque ornare aenean euismod elementum nisi.
@@ -59,6 +87,17 @@ export default function Page() {
               </Typography>
             </CardContent>
           </Card>
+
+          <Paper elevation={3} sx={{ my: 2, p: 2 }} id="paper-example-1" data-toc-title="Key Information (Paper)" data-toc-level="3">
+            <Typography variant="h6" component="div" gutterBottom>
+              Paper Component Title (Not in ToC)
+            </Typography>
+            <Typography variant="body2">
+              This is a MUI Paper component that should also appear in the Table of Contents.
+              It uses the `data-toc-title` and `data-toc-level` attributes just like the Card examples.
+              Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
+            </Typography>
+          </Paper>
 
         </section>
 
@@ -102,6 +141,15 @@ export default function Page() {
             </CardContent>
           </Card>
 
+          <Paper variant="outlined" sx={{ my: 2, p: 2 }} id="paper-example-2" data-toc-title="Outlined Paper (Level 2)" data-toc-level="2">
+            <Typography variant="h6" component="div" gutterBottom>
+              Another Paper Example (Not in ToC)
+            </Typography>
+            <Typography variant="body2">
+              This outlined Paper component also demonstrates the ToC integration.
+              Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper.
+            </Typography>
+          </Paper>
         </section>
 
         <section>
@@ -134,11 +182,29 @@ export default function Page() {
             Sed porttitor lectus nibh. Pellentesque in ipsum id orci porta dapibus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi.
           </Typography>
         </section>
+      </Box>
 
-      </Box>
-      <Box component="aside" sx={{ flex: 1, position: 'sticky', top: '4rem', height: 'calc(100vh - 4rem)' }}>
-        <TableOfContents selectors="h2, h3, [data-toc-title]" />
-      </Box>
+      {isMobile && !drawerOpen && (
+        <Fab
+          color="primary"
+          aria-label="open drawer"
+          onClick={handleDrawerToggle}
+          sx={{
+            position: 'fixed',
+            top: (theme) => theme.spacing(2 + 8),
+            right: (theme) => theme.spacing(2),
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+          }}
+        >
+          <MenuIcon />
+        </Fab>
+      )}
+
+      <CalculatorDrawer
+        drawerWidth={drawerWidth}
+        open={drawerOpen}
+        onClose={handleDrawerToggle}
+      />
     </Box>
   );
 }

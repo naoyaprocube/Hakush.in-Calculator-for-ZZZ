@@ -1,18 +1,24 @@
 'use client';
 
-import { useToc, HeadingData } from '../hooks/useToc';
-import Box from '@mui/material/Box';
-import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import Typography from '@mui/material/Typography';
-
+import {
+  Box,
+  List,
+  ListItemButton,
+  ListItemText,
+  Stack,
+  Typography,
+  useTheme,
+  useMediaQuery
+} from '@mui/material';
+import { HeadingData, useToc } from '../hooks/useToc';
 interface TableOfContentsProps {
   selectors?: string; // オプションでセレクタを指定できるようにする
 }
 
 const TableOfContents = ({ selectors = 'h2, h3' }: TableOfContentsProps) => {
   const { headings, activeId, setActiveId } = useToc(selectors);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const handleClick = (id: string) => {
     const element = document.getElementById(id);
@@ -31,45 +37,49 @@ const TableOfContents = ({ selectors = 'h2, h3' }: TableOfContentsProps) => {
   }
 
   return (
-    <Box
-      component="nav"
-      sx={{
-        position: 'sticky',
-        top: '4rem', // ヘッダーの高さに応じて調整
-        maxHeight: 'calc(100vh - 4rem)',
-        overflowY: 'auto',
-        p: 2,
-        borderLeft: 1,
-        borderColor: 'divider',
-      }}
-    >
-      <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-        On this page
-      </Typography>
-      <List dense>
-        {headings.map((heading: HeadingData) => (
-          <ListItemButton
-            key={heading.id}
-            selected={activeId === heading.id}
-            onClick={() => handleClick(heading.id)}
-            sx={{
-              pl: heading.level === 3 ? 4 : 2, // h3の場合はインデントを深くする
-              '&.Mui-selected': {
-                backgroundColor: 'action.selected',
-                '&:hover': {
+    <Box component="aside" sx={{ flex: 1, position: 'sticky' }}>
+      <Stack
+        component="nav"
+        sx={{
+          display: isMobile ? 'none' : 'block', // モバイルでは非表示
+          maxHeight: '100vh',
+          overflowY: 'auto',
+          p: 2,
+          borderRight: 1,
+          borderColor: 'divider',
+          position: 'sticky',
+          width: 250,
+          top: 30
+        }}
+      >
+        <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+          On this page
+        </Typography>
+        <List dense>
+          {headings.map((heading: HeadingData) => (
+            <ListItemButton
+              key={heading.id}
+              selected={activeId === heading.id}
+              onClick={() => handleClick(heading.id)}
+              sx={{
+                pl: heading.level === 3 ? 4 : 2, // h3の場合はインデントを深くする
+                '&.Mui-selected': {
                   backgroundColor: 'action.selected',
+                  '&:hover': {
+                    backgroundColor: 'action.selected',
+                  },
+                  '& .MuiListItemText-primary': {
+                    fontWeight: 'bold',
+                    color: 'primary.main',
+                  },
                 },
-                '& .MuiListItemText-primary': {
-                  fontWeight: 'bold',
-                  color: 'primary.main',
-                },
-              },
-            }}
-          >
-            <ListItemText primary={heading.text} />
-          </ListItemButton>
-        ))}
-      </List>
+              }}
+            >
+              <ListItemText primary={heading.text} />
+            </ListItemButton>
+          ))}
+        </List>
+      </Stack>
     </Box>
   );
 };
